@@ -1,0 +1,6 @@
+INFO       2022-07-10 23:13:41,450: {'name': 'fuel_flow', 'regex': ''} conveted to object
+INFO       2022-07-10 23:13:41,450: {'name': 'thrust_change', 'regex': ''} conveted to object
+INFO       2022-07-10 23:13:41,450: {'name': 'thrust', 'regex': ''} conveted to object
+INFO       2022-07-10 23:13:41,450: {'name': 'drag', 'regex': ''} conveted to object
+INFO       2022-07-10 23:13:41,450: {'name': 'motion', 'regex': ''} conveted to object
+INFO       2022-07-10 23:13:41,450: {'name': 'env_properties', 'regex': ''} conveted to object
