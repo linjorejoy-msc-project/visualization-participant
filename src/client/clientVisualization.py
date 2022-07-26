@@ -25,7 +25,6 @@ import os
 
 file_path = os.path.join(os.path.abspath(os.curdir), "src\\client_main\\LOGS")
 
-FORMAT = "%(levelname)-10s %(asctime)s: %(message)s"
 # logging.basicConfig(
 #     filename=f"logs_fields.log",
 #     encoding="utf-8",
@@ -33,6 +32,7 @@ FORMAT = "%(levelname)-10s %(asctime)s: %(message)s"
 #     format=FORMAT,
 #     filemode="w",
 # )
+FORMAT = "%(levelname)-10s %(asctime)s: %(message)s"
 logging.basicConfig(
     handlers=[
         logging.FileHandler(
@@ -60,8 +60,7 @@ CONFIG_DATA = {
     "variables_subscribed": [],
 }
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.connect(("localhost", 1234))
+server_socket: socket.socket = None
 
 CONSTANTS = {}
 
@@ -135,6 +134,9 @@ def listening_function(server_socket):
 
 
 def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.connect(("localhost", 1234))
+
     listening_thread = threading.Thread(
         target=listening_function, args=(server_socket,)
     )

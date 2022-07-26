@@ -1,5 +1,5 @@
 settings_dict = {
-    "screenRatio": 0.85,
+    "screenRatio": 0.95,
 }
 
 CURRENT_VERSION = "v1.0.1"

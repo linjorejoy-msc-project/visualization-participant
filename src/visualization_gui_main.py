@@ -18,6 +18,7 @@ from pages.MasterPage import MasterPage
 import pages.StartPage as StartPage
 import pages.TestPage as TestPage
 import pages.StartServer as StartServer
+import pages.VisualizationPage1 as VisualizationPage1
 
 # Helpermodules
 from helpermodules.constants import CURRENT_VERSION, settings_dict
@@ -43,10 +44,12 @@ class VisualizationGui(Tk):
         Tk.wm_title(self, f"Visualization {CURRENT_VERSION}")
 
         # Global Variables
-        SCREEN_RATIO = settings_dict["screenRatio"]
-        if not (0.7 < SCREEN_RATIO < 1):
-            SCREEN_RATIO = 0.85
-        Tk.geometry(self, self.get_screen_dimentions(SCREEN_RATIO))
+        # SCREEN_RATIO = settings_dict["screenRatio"]
+        # if not (0.7 < SCREEN_RATIO < 1):
+        #     SCREEN_RATIO = 0.85
+        # Tk.geometry(self, self.get_screen_dimentions(SCREEN_RATIO))
+        self.state("zoomed")
+        # self.attributes("-fullscreen", True)
 
         # Global Container
         self.global_container = Frame(self)
@@ -56,22 +59,19 @@ class VisualizationGui(Tk):
         self.global_container.columnconfigure(0, weight=1)
 
         self.FRAMES = [
-            StartPage.StartPage,
             StartServer.StartServer,
-            TestPage.TestPage,
+            VisualizationPage1.VisualizationPage1,
         ]
 
         for FRAME in self.FRAMES:
             frame = FRAME(self.global_container, self)
             self.frames[FRAME] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
-        print("Here..")
-        print(f"Top : {self.frames}")
 
         # Add Menu
         self.add_menu()
-        self.show_frame(StartServer.StartServer)
-        self.set_log_settings()
+        self.show_frame(VisualizationPage1.VisualizationPage1)
+        # self.set_log_settings()
 
     def get_screen_dimentions(self, ratio: float = 0.8):
 
