@@ -78,18 +78,33 @@ class ClientVisualizationClass:
         # to store data received
         self.data_dict = {}
 
+        self.all_data_list = []
+
         # self.all_data = {}
+        self.all_data_seperated_dict = {}
         self.all_data_df = pd.DataFrame()
+        self.convert_df_period = 5
+        self.current_period_cycle = 0
 
     def run_one_cycle(self):
         # global data_dict
         # self.all_data[self.data_dict["currentTimestep"]] = self.data_dict.copy()
-        self.all_data_df = pd.concat(
-            [
-                self.all_data_df,
-                pd.DataFrame(self.data_dict, index=[len(self.all_data_df)]),
-            ]
-        )
+        for each_key in self.data_dict.keys():
+            if each_key in self.all_data_seperated_dict.keys():
+                self.all_data_seperated_dict[each_key].append(self.data_dict[each_key])
+            else:
+                self.all_data_seperated_dict[each_key] = [self.data_dict[each_key]]
+        # self.all_data_list.append(self.data_dict.copy())
+        # self.current_period_cycle += 1
+        # if self.current_period_cycle == self.convert_df_period:
+        #     self.all_data_df = pd.DataFrame.from_dict(self.all_data_list)
+        #     self.current_period_cycle = 0
+        # self.all_data_df = pd.concat(
+        #     [
+        #         self.all_data_df,
+        #         pd.DataFrame(self.data_dict, index=[len(self.all_data_df)]),
+        #     ]
+        # )
         # self.all_data_df = self.all_data_df.append(self.data_dict, ignore_index=True)
         logging.debug(
             f"Timestep: {self.data_dict['currentTimestep']:5}----{self.data_dict}"

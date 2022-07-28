@@ -1,5 +1,8 @@
+import matplotlib as mpl
+from matplotlib.animation import FuncAnimation
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
 
 plots = {
     "1": {
@@ -272,30 +275,153 @@ data_list = [
     each_data_8,
     each_data_9,
 ]
+global to_add
+
+to_add = [
+    each_data_10,
+    each_data_11,
+    each_data_12,
+    each_data_13,
+    each_data_14,
+    each_data_15,
+]
+
+global df
+df = pd.DataFrame(
+    data_list, index=[each_data["currentTimestep"] for each_data in data_list]
+)
 
 
-df = pd.DataFrame(data_list)
-df2 = pd.DataFrame()
-print(df2)
-df2 = pd.concat(
-    [
-        df2,
-        pd.DataFrame(each_data_13, index=[len(df2)]),
-    ]
+fig, axs = plt.subplots(
+    figsize=(12, 6),
+    linewidth=5,
+    edgecolor="#04253a",
+    dpi=55,
 )
-df2 = pd.concat(
-    [
-        df2,
-        pd.DataFrame(each_data_14, index=[len(df2)]),
-    ]
-)
-df2 = pd.concat(
-    [
-        df2,
-        pd.DataFrame(each_data_15, index=[len(df2)]),
-    ]
-)
-print(df2)
+print(df[["drag", "currentThrust"]])
+this_plot = df[["drag", "currentThrust"]].plot(ax=axs, subplots=True)
+
+print(this_plot[0])
+print(this_plot[1])
+
+
+def update(i):
+    global df
+    global to_add
+
+    # axs.cla()
+    df = pd.concat(
+        [
+            df,
+            pd.DataFrame(to_add[0], index=[to_add[0]["currentTimestep"]]),
+        ]
+    )
+    to_add = to_add[1:]
+    print(df[["drag", "currentThrust"]])
+    df[["drag", "currentThrust"]].plot(ax=axs, subplots=True)
+
+
+ani = FuncAnimation(fig, update, interval=1000)
+plt.show()
+
+# fig, axs = plt.subplots(
+#     nrows=3,
+#     ncols=2,
+#     figsize=(12, 6),
+#     linewidth=5,
+#     edgecolor="#04253a",
+#     dpi=55,
+# )
+#
+# df[["currentTimestep", "drag"]].plot(x="currentTimestep", y="drag", ax=axs[0, 0])
+# df[["currentTimestep", "currentMassFlowRate"]].plot(
+#     x="currentTimestep", y="currentMassFlowRate", ax=axs[0, 1]
+# )
+# df[["currentTimestep", "currentOxidiserMass"]].plot(
+#     x="currentTimestep", y="currentOxidiserMass", ax=axs[1, 0]
+# )
+# df[["currentTimestep", "currentFuelMass"]].plot(
+#     x="currentTimestep", y="currentFuelMass", ax=axs[1, 1]
+# )
+# df[["currentTimestep", "currentVelocityDelta"]].plot(
+#     x="currentTimestep", y="currentVelocityDelta", ax=axs[2, 0]
+# )
+# df[["currentTimestep", "requiredThrustChange"]].plot(
+#     x="currentTimestep", y="requiredThrustChange", ax=axs[2, 1]
+# )
+
+
+# def update(i):
+#     global df
+#     global to_add
+
+#     axs[0, 0].cla()
+#     axs[0, 1].cla()
+#     axs[1, 0].cla()
+#     axs[1, 1].cla()
+#     axs[2, 0].cla()
+#     axs[2, 1].cla()
+
+#     df = pd.concat(
+#         [
+#             df,
+#             pd.DataFrame(to_add[0], index=[len(df)]),
+#         ]
+#     )
+#     to_add = to_add[1:]
+#     print(df)
+#     df[["currentTimestep", "drag"]].plot(x="currentTimestep", y="drag", ax=axs[0, 0])
+#     df.plot(x="currentTimestep", y="currentMassFlowRate", ax=axs[0, 1])
+#     df[["currentTimestep", "currentOxidiserMass"]].plot(
+#         x="currentTimestep", y="currentOxidiserMass", ax=axs[1, 0]
+#     )
+#     df[["currentTimestep", "currentFuelMass"]].plot(
+#         x="currentTimestep", y="currentFuelMass", ax=axs[1, 1]
+#     )
+#     df[["currentTimestep", "currentVelocityDelta"]].plot(
+#         x="currentTimestep", y="currentVelocityDelta", ax=axs[2, 0]
+#     )
+#     df[["currentTimestep", "requiredThrustChange"]].plot(
+#         x="currentTimestep", y="requiredThrustChange", ax=axs[2, 1]
+#     )
+
+
+# ani = FuncAnimation(fig, update, interval=1000)
+# plt.show()
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+# df2 = pd.DataFrame()
+# print(df2)
+# df2 = pd.concat(
+#     [
+#         df2,
+#         pd.DataFrame(each_data_13, index=[len(df2)]),
+#     ]
+# )
+# df2 = pd.concat(
+#     [
+#         df2,
+#         pd.DataFrame(each_data_14, index=[len(df2)]),
+#     ]
+# )
+# df2 = pd.concat(
+#     [
+#         df2,
+#         pd.DataFrame(each_data_15, index=[len(df2)]),
+#     ]
+# )
+# print(df2)
 
 # print(df)
 
@@ -317,14 +443,6 @@ print(df2)
 
 
 # print(df)
-# fig, axs = plt.subplots(
-#     nrows=3,
-#     ncols=2,
-#     figsize=(12, 6),
-#     linewidth=5,
-#     edgecolor="#04253a",
-#     dpi=55,
-# )
 
 # axs[0, 0].plot(df["currentTimestep"], df["drag"])
 # axs[0, 1].plot(df["currentTimestep"], df["currentMassFlowRate"])
@@ -333,7 +451,7 @@ print(df2)
 # axs[2, 0].plot(df["currentTimestep"], df["currentVelocityDelta"])
 # axs[2, 1].plot(df["currentTimestep"], df["requiredThrustChange"])
 
-print(df["drag", "currentTimestep"])
+# print(df["drag", "currentTimestep"])
 
 # df.plot(
 #     ax=axs[0, 0],
