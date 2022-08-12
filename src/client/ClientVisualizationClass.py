@@ -1,6 +1,10 @@
 import socket
 import threading
-import pandas as pd
+import json
+import datetime
+import os
+
+# import pandas as pd
 
 from common_functions import (
     check_to_run_cycle,
@@ -27,17 +31,6 @@ class ClientVisualizationClass:
     def __init__(self) -> None:
         self.file_path = os.path.join(
             os.path.abspath(os.curdir), "src\\client_main\\LOGS"
-        )
-
-        self.FORMAT = "%(levelname)-10s %(asctime)s: %(message)s"
-        logging.basicConfig(
-            handlers=[
-                logging.FileHandler(
-                    filename="logs_visualization.log", encoding="utf-8", mode="w"
-                )
-            ],
-            level=logging.DEBUG,
-            format=self.FORMAT,
         )
 
         self.HEADERSIZE = 5
@@ -82,18 +75,50 @@ class ClientVisualizationClass:
 
         # self.all_data = {}
         self.all_data_seperated_dict = {}
-        self.all_data_df = pd.DataFrame()
+        self.all_data_combined_dict = {}
+        # self.all_data_df = pd.DataFrame()
         self.convert_df_period = 5
         self.current_period_cycle = 0
+
+        # Filepaths and mkdir
+        self.data_dir = os.path.join(os.path.curdir, "src/data")
+        self.folder_name = os.path.join(
+            self.data_dir, str(datetime.datetime.now()).replace(":", "-")
+        )
+        os.mkdir(path=self.folder_name)
+        self.log_file = os.path.join(self.folder_name, "logs_visualization.log")
+        self.all_data_json_file = os.path.join(
+            self.folder_name, "all_data_seperated_dict.json"
+        )
+        self.all_data_combined_json_file = os.path.join(
+            self.folder_name, "all_data_combined_dict.json"
+        )
+
+        self.FORMAT = "%(levelname)-10s %(asctime)s: %(message)s"
+        logger = logging.getLogger("matplotlib")
+        logging.basicConfig(
+            handlers=[
+                logging.FileHandler(filename=self.log_file, encoding="utf-8", mode="w")
+            ],
+            level=logging.DEBUG,
+            format=self.FORMAT,
+        )
+        logger.setLevel(logging.WARNING)
 
     def run_one_cycle(self):
         # global data_dict
         # self.all_data[self.data_dict["currentTimestep"]] = self.data_dict.copy()
+
         for each_key in self.data_dict.keys():
             if each_key in self.all_data_seperated_dict.keys():
                 self.all_data_seperated_dict[each_key].append(self.data_dict[each_key])
             else:
                 self.all_data_seperated_dict[each_key] = [self.data_dict[each_key]]
+
+        self.all_data_combined_dict[
+            f"{self.data_dict['versions']}.{self.data_dict['currentTimestep']}"
+        ] = self.data_dict.copy()
+
         # self.all_data_list.append(self.data_dict.copy())
         # self.current_period_cycle += 1
         # if self.current_period_cycle == self.convert_df_period:
@@ -102,13 +127,18 @@ class ClientVisualizationClass:
         # self.all_data_df = pd.concat(
         #     [
         #         self.all_data_df,
-        #         pd.DataFrame(self.data_dict, index=[len(self.all_data_df)]),
+        #         pd.DataFrame(self.data_dict, index=[self.data_dict["currentTimestep"]]),
         #     ]
         # )
         # self.all_data_df = self.all_data_df.append(self.data_dict, ignore_index=True)
         logging.debug(
-            f"Timestep: {self.data_dict['currentTimestep']:5}----{self.data_dict}"
+            f"Timestep: {self.data_dict['currentTimestep']:5}-{self.data_dict}"
         )
+        if self.data_dict["currentTimestep"] == 246:
+            with open(self.all_data_json_file, mode="w") as json_file:
+                json.dump(self.all_data_seperated_dict, json_file, indent=2)
+            with open(self.all_data_combined_json_file, mode="w") as combined_json_file:
+                json.dump(self.all_data_combined_dict, combined_json_file, indent=2)
         # print(f"Timestep: {self.data_dict['currentTimestep']:5}-{self.data_dict}")
 
     def run_cycle(self):
@@ -123,10 +153,10 @@ class ClientVisualizationClass:
         # global cycle_flags
         logging.info(f"Started Listening for analysis")
         while True:
-            topic, info = recv_topic_data(self.server_socket)
+            topic, sent_time, recv_time, info = recv_topic_data(self.server_socket)
             if topic in self.cycle_flags.keys():
                 self.cycle_flags[topic] = True
-                self.topic_func_dict[topic](self.data_dict, info)
+                self.topic_func_dict[topic](self.data_dict, sent_time, recv_time, info)
             else:
                 logging.error(
                     f"{self.CONFIG_DATA['name']} is not subscribed to {topic}"
@@ -157,6 +187,7 @@ class ClientVisualizationClass:
 
     def main(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.server_socket.connect(("192.168.1.2", 1234))
         self.server_socket.connect(("localhost", 1234))
 
         listening_thread = threading.Thread(

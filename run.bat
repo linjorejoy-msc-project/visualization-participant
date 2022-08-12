@@ -1,0 +1,1 @@
+.\viz_part\Scripts\activate.bat & python src\VisualizationStandalone.py
