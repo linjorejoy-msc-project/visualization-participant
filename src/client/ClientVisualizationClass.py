@@ -7,6 +7,7 @@ import os
 # import pandas as pd
 
 from common_functions import (
+    atmosphere_received,
     check_to_run_cycle,
     drag_received,
     field_received,
@@ -43,6 +44,7 @@ class ClientVisualizationClass:
                 "thrust",
                 "fuel_flow",
                 "drag",
+                "atmosphere",
             ],
             "published_topics": [],
             "constants_required": [],
@@ -59,6 +61,7 @@ class ClientVisualizationClass:
             "thrust": False,
             "fuel_flow": False,
             "drag": False,
+            "atmosphere": False,
         }
         self.topic_func_dict = {
             "motion": motion_received,
@@ -66,6 +69,7 @@ class ClientVisualizationClass:
             "thrust": thrust_received,
             "fuel_flow": fuel_flow_received,
             "drag": drag_received,
+            "atmosphere": atmosphere_received,
         }
 
         # to store data received
